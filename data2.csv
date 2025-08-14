@@ -1,0 +1,52 @@
+Section,Subsection,Field,Value,Notes,ImageURL
+Table of Contents,,1,Growth Landscape Insights,,
+Table of Contents,,2,Performance Leakages Insights,,
+
+Growth Landscape,Opportunity Analysis,Category,Cat 01 (Price > ₹0.7/g),,
+Growth Landscape,Opportunity Analysis,Segment,Pack 01 (Size > 100g),,
+Growth Landscape,Opportunity Analysis,Opportunity Size,0.0 Cr (per month, BlinkIt),,
+Growth Landscape,Opportunity Analysis,Top Competitor,Competition,,
+
+Growth Landscape,Brand Comparison,Brand 1,Lays Stax,,https://placehold.co/100x100?text=Lays+Stax
+Growth Landscape,Brand Comparison,Brand 2,Pringles,,https://placehold.co/100x100?text=Pringles
+Growth Landscape,Brand Comparison,SKU Name,SKU 01,,https://placehold.co/100x100?text=SKU+01
+
+Growth Landscape,Capture Strategy,OSA (Supply),"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",,
+Growth Landscape,Capture Strategy,SOV,"Corem ipsum dolor sit amet, consectetur adipiscing elit.",,
+Growth Landscape,Capture Strategy,Discounting/Pricing,"Dorem ipsum dolor sit amet, consectetur adipiscing elit.",,
+
+Growth Landscape,Competitor Benchmarking,Brand,Toorem Ipsum,,
+Growth Landscape,Competitor Benchmarking,Top Selling SKU,Dolor Sit Amet,,
+Growth Landscape,Competitor Benchmarking,Market Share,0.0%,,
+Growth Landscape,Competitor Benchmarking,Pack Size,000 g,,
+Growth Landscape,Competitor Benchmarking,PPU,0.00,,
+Growth Landscape,Competitor Benchmarking,Weighted OSA,0.00%,,
+
+Growth Landscape,Competitor Benchmarking,Brand,Gorem Ipsum,,
+Growth Landscape,Competitor Benchmarking,Top Selling SKU,Dolor Sit Amet,,
+Growth Landscape,Competitor Benchmarking,Market Share,0.0%,,
+Growth Landscape,Competitor Benchmarking,Pack Size,000 g,,
+Growth Landscape,Competitor Benchmarking,PPU,0.00,,
+Growth Landscape,Competitor Benchmarking,Weighted OSA,0.00%,,
+
+Growth Landscape,Insights Derivation,Segmentation,Potato Chips - BlinkIt Analysis,,
+Growth Landscape,Insights Derivation,Indexing (UI/QI),Corem ipsum dolor sit amet,,
+Growth Landscape,Insights Derivation,Sales Potential Formula 1,Premium × UI%,,
+Growth Landscape,Insights Derivation,Sales Potential Formula 2,Premium × Penetration,,
+
+Performance Leakages,Title,Performance leakages insights,July MTD,,
+
+Performance Leakages,Leak 1,Focus Category,Borem ipsum dolor,,
+Performance Leakages,Leak 1,Sales Impact,00 Lakhs,,
+Performance Leakages,Leak 1,What Happened,"Toorem ipsum dolor sit amet, consectetur adipiscing elit.",,
+Performance Leakages,Leak 1,Recommendation,"Soorem ipsum dolor sit amet, consectetur adipiscing elit.",,
+
+Performance Leakages,Leak 2,Focus Category,Lorem ipsum dolor,,
+Performance Leakages,Leak 2,Sales Impact,0 Lakhs,,
+Performance Leakages,Leak 2,What Happened,"Nunc vulputate libero et velit interdum.",,
+Performance Leakages,Leak 2,Recommendation,"Nunc vulputate libero et velit interdum.",,
+
+Performance Leakages,Leak 3,Focus Category,Jorem ipsum dolor,,
+Performance Leakages,Leak 3,Sales Impact,0 Lakhs,,
+Performance Leakages,Leak 3,What Happened,"Aliquet odio mattis, lorem ipsum dolor.",,
+Performance Leakages,Leak 3,Recommendation,"Nunc augue odio mattis, lorem ipsum dolor.",,
