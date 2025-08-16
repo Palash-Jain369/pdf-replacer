@@ -61,15 +61,46 @@ async function sendScreenshotsToLLM(screenshotPaths, apiKey = null) {
             const imageBuffer = fs.readFileSync(screenshotPath);
             const base64Image = imageBuffer.toString('base64');
             
-            const prompt = `Create an HTML container section of 16:9 ratio that looks exactly like the image attached here. 
+            const prompt = `Create a pixel-perfect HTML recreation of this image as a 16:9 ratio container. The output will be converted to PDF, so focus on exact visual replication.
 
-IMPORTANT: Replace all moustache/template variables (like {{name}}, {{date}}, {{amount}}, etc.) with realistic dummy data that fits the context.
+CRITICAL REQUIREMENTS:
+- Match EXACT colors, gradients, shadows, borders, and visual effects from the image
+- Replicate precise positioning, spacing, margins, and padding
+- Use identical font sizes, weights, and line heights
+- Reproduce exact background colors, patterns, textures, or gradients
+- Match border styles, corner radii, and shadow effects precisely
+- Maintain exact proportions and aspect ratios of all elements
 
-Match the exact colors, fonts, spacing, and layout. Use cdn.tailwindcss.com and google font cdn. 
+COLOR & VISUAL ACCURACY:
+- Extract and use the exact hex/RGB colors from the image
+- Reproduce gradients with precise color stops and directions
+- Match shadow blur, spread, and opacity values exactly
+- Replicate any background patterns, textures, or images
+- Ensure proper contrast and color relationships
 
-Output should be strictly json: {"output":"your complete HTML response"}
+TYPOGRAPHY PRECISION:
+- Use Google Fonts to match font families as closely as possible
+- Set exact font sizes, weights (100-900), and letter spacing
+- Match line heights and text alignment precisely
+- Reproduce any text shadows, outlines, or effects
 
-`;
+LAYOUT ACCURACY:
+- Use CSS Grid/Flexbox for precise positioning
+- Match exact spacing between elements
+- Reproduce border styles, widths, and corner radius
+- Maintain proper z-index layering and element stacking
+- Ensure responsive behavior matches original proportions
+
+TECHNICAL REQUIREMENTS:
+- Use Tailwind CSS via cdn.tailwindcss.com
+- Include appropriate Google Fonts
+- Replace template variables ({{name}}, {{date}}, etc.) with realistic dummy data
+- Use semantic HTML structure
+- Optimize for PDF rendering (no animations or hover effects)
+
+Output format: {"output":"your complete HTML response"}
+
+Focus on creating an exact visual replica that will render identically when converted to PDF.`;
             const payload = {
                 model: "claude-sonnet-4-20250514",
                 max_tokens: 8192,
