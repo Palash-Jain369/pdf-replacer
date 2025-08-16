@@ -4,16 +4,29 @@ const pdf2pic = require('pdf2pic');
 const axios = require('axios');
 const FormData = require('form-data');
 
-async function takePdfScreenshots(pdfPath, outputDir = './screenshots', options = {}) {
+function slugifyFilename(filename) {
+    return filename
+        .replace(/\.[^/.]+$/, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+async function takePdfScreenshots(pdfPath, outputDir = './output', options = {}) {
     try {
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
+        const pdfFilename = path.basename(pdfPath);
+        const pdfSlug = slugifyFilename(pdfFilename);
+        const screenshotDir = path.join(outputDir, pdfSlug, 'screenshots');
+        
+        if (!fs.existsSync(screenshotDir)) {
+            fs.mkdirSync(screenshotDir, { recursive: true });
         }
 
         const defaultOptions = {
             density: 150,
             saveFilename: "page",
-            savePath: outputDir,
+            savePath: screenshotDir,
             format: "png",
             width: 1200,
             height: 900
@@ -26,7 +39,7 @@ async function takePdfScreenshots(pdfPath, outputDir = './screenshots', options 
         const results = await convert.bulk(-1);
         const screenshotPaths = results.map((_, index) => {
             const filename = `${config.saveFilename}.${index + 1}.${config.format}`;
-            return path.join(outputDir, filename);
+            return path.join(screenshotDir, filename);
         });
         
         console.log(`✅ Generated ${screenshotPaths.length} screenshots`);
@@ -58,7 +71,7 @@ Output should be strictly json: {"output":"your complete HTML response"}
             const payload = {
                 model: "claude-sonnet-4-20250514",
                 max_tokens: 8192,
-                temperature: 0.1,
+                temperature: 0.3,
                 messages: [
                     {
                         role: "user",
@@ -214,8 +227,12 @@ async function processPdfFile(pdfPath, outputDir = './screenshots', apiKey = nul
             llmResults = await sendScreenshotsToLLM(screenshotPaths, apiKey);
         }
         
+        const pdfFilename = path.basename(pdfPath);
+        const pdfSlug = slugifyFilename(pdfFilename);
+        
         return {
             pdfPath,
+            pdfSlug,
             screenshotPaths,
             llmResults,
             totalPages: screenshotPaths.length,

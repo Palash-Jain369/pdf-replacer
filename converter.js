@@ -9,7 +9,6 @@ async function processPdf() {
         
         const pdfPath = './samples/sample deck_2.pdf';
         const csvPath = './data2.csv';
-        const outputDir = process.env.SCREENSHOT_DIR || './screenshots';
         const claudeOutputDir = process.env.OUTPUT_DIR || './output';
         
         if (!fs.existsSync(claudeOutputDir)) {
@@ -24,7 +23,18 @@ async function processPdf() {
             throw new Error('Claude API key not found. Please set CLAUDE_API_KEY in your .env file');
         }
         
-        const results = await processPdfFile(pdfPath, outputDir, apiKey);
+        const results = await processPdfFile(pdfPath, claudeOutputDir, apiKey);
+        
+        const pdfOutputDir = path.join(claudeOutputDir, results.pdfSlug);
+        const jsonDir = path.join(pdfOutputDir, 'json');
+        const htmlDir = path.join(pdfOutputDir, 'html');
+        
+        if (!fs.existsSync(jsonDir)) {
+            fs.mkdirSync(jsonDir, { recursive: true });
+        }
+        if (!fs.existsSync(htmlDir)) {
+            fs.mkdirSync(htmlDir, { recursive: true });
+        }
         
         console.log('💾 Saving outputs...');
         const savedFiles = [];
@@ -34,7 +44,7 @@ async function processPdf() {
             const pageNumber = i + 1;
             
             const outputFilename = `claude_output_page_${pageNumber}.json`;
-            const outputPath = path.join(claudeOutputDir, outputFilename);
+            const outputPath = path.join(jsonDir, outputFilename);
             
             const outputData = {
                 page: pageNumber,
@@ -51,7 +61,7 @@ async function processPdf() {
                 const htmlContent = parseHtmlFromLLMResponse(result.analysis);
                 if (htmlContent) {
                     const htmlFilename = `html_output_page_${pageNumber}.html`;
-                    const htmlPath = path.join(claudeOutputDir, htmlFilename);
+                    const htmlPath = path.join(htmlDir, htmlFilename);
                     
                     fs.writeFileSync(htmlPath, htmlContent);
                     savedFiles.push(htmlPath);
@@ -59,7 +69,7 @@ async function processPdf() {
             }
         }
         
-        const summaryPath = path.join(claudeOutputDir, 'processing_summary.json');
+        const summaryPath = path.join(pdfOutputDir, 'processing_summary.json');
         const summary = {
             processedAt: new Date().toISOString(),
             pdfPath: pdfPath,
@@ -71,7 +81,7 @@ async function processPdf() {
         
         fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
         
-        console.log(`🎉 Processing complete! Generated ${savedFiles.length} files in ${claudeOutputDir}`);
+        console.log(`🎉 Processing complete! Generated ${savedFiles.length} files in ${pdfOutputDir}`);
         
     } catch (error) {
         console.error('Processing failed:', error);
