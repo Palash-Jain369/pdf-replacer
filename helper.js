@@ -68,7 +68,7 @@ async function sendScreenshotsToLLM(screenshotPaths, csvData, apiKey = null) {
     try {
         const results = [];
         
-        for (const screenshotPath of screenshotPaths.slice(1, 2)) {
+        for (const screenshotPath of screenshotPaths) {
             console.log(`Processing screenshot: ${screenshotPath}`);
             
             // Read the image file
@@ -76,7 +76,7 @@ async function sendScreenshotsToLLM(screenshotPaths, csvData, apiKey = null) {
             const base64Image = imageBuffer.toString('base64');
             
             // Prepare the prompt with CSV data
-            const prompt = `Create an HTML canvas of 16:9 ratio that looks exactly like the image attached here. It should be a single HTML file using cdn.tailwindcss.com and google font cdn. Replace all moustache variables with dummy data. Output should be strictly json: "output":"your response"
+            const prompt = `Create an HTML container section of 16:9 ratio that looks exactly like the image attached here. It should be a single HTML file using cdn.tailwindcss.com and google font cdn. Replace all moustache variables with dummy data. Output should be strictly json: "output":"your response"
 
 `;
             console.log(prompt);

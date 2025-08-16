@@ -5,7 +5,7 @@ const path = require('path');
 
 async function testPdfProcessing() {
     try {
-        const pdfPath = './sample deck_2.pdf';
+        const pdfPath = './sample deck_1.pdf';
         const csvPath = './data2.csv';
         const outputDir = process.env.SCREENSHOT_DIR || './screenshots';
         const claudeOutputDir = process.env.OUTPUT_DIR || './output';
