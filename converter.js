@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { processPdfFile, readCsvData, parseHtmlFromLLMResponse } = require('./helper.js');
+const { processPdfFile, readCsvData, parseHtmlFromLLMResponse, generateFinalPdf } = require('./helper.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -82,6 +82,10 @@ async function processPdf() {
         fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
         
         console.log(`🎉 Processing complete! Generated ${savedFiles.length} files in ${pdfOutputDir}`);
+        
+        console.log('📄 Generating final combined PDF...');
+        const finalPdfPath = await generateFinalPdf(claudeOutputDir, results.pdfSlug);
+        console.log(`✅ Final PDF saved: ${finalPdfPath}`);
         
     } catch (error) {
         console.error('Processing failed:', error);

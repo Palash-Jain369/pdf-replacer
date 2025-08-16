@@ -3,6 +3,8 @@ const path = require('path');
 const pdf2pic = require('pdf2pic');
 const axios = require('axios');
 const FormData = require('form-data');
+const puppeteer = require('puppeteer');
+const { PDFDocument } = require('pdf-lib');
 
 function slugifyFilename(filename) {
     return filename
@@ -245,10 +247,164 @@ async function processPdfFile(pdfPath, outputDir = './screenshots', apiKey = nul
     }
 }
 
+async function convertHtmlToPdf(htmlPath, outputPath, browser = null) {
+    try {
+        const shouldCloseBrowser = !browser;
+        if (!browser) {
+            browser = await puppeteer.launch();
+        }
+        
+        const page = await browser.newPage();
+        
+        // Set viewport to match 16:9 aspect ratio for consistent rendering
+        await page.setViewport({
+            width: 1920,
+            height: 1080,
+            deviceScaleFactor: 1
+        });
+        
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        
+        // Add CSS to ensure content fits in a single page
+        const modifiedHtml = htmlContent.replace(
+            '</head>',
+            `<style>
+                @page {
+                    size: A4 landscape;
+                    margin: 0;
+                }
+                html, body {
+                    width: 100vw;
+                    height: 100vh;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }
+                * {
+                    box-sizing: border-box;
+                }
+                .aspect-video {
+                    aspect-ratio: 16/9;
+                    width: 100vw;
+                    height: 100vh;
+                }
+            </style>
+            </head>`
+        );
+        
+        await page.setContent(modifiedHtml, { 
+            waitUntil: 'domcontentloaded',
+            timeout: 10000 
+        });
+        
+        await page.pdf({
+            path: outputPath,
+            format: 'A4',
+            landscape: true,
+            printBackground: true,
+            margin: {
+                top: '0mm',
+                right: '0mm',
+                bottom: '0mm',
+                left: '0mm'
+            },
+            preferCSSPageSize: true
+        });
+        
+        await page.close();
+        
+        if (shouldCloseBrowser) {
+            await browser.close();
+        }
+        
+        console.log(`✅ Generated PDF: ${path.basename(outputPath)}`);
+        
+    } catch (error) {
+        console.error('Error converting HTML to PDF:', error);
+        throw error;
+    }
+}
+
+async function combineMultiplePdfs(pdfPaths, outputPath) {
+    try {
+        const mergedPdf = await PDFDocument.create();
+        
+        for (const pdfPath of pdfPaths) {
+            const pdfBytes = fs.readFileSync(pdfPath);
+            const pdf = await PDFDocument.load(pdfBytes);
+            const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            pages.forEach((page) => mergedPdf.addPage(page));
+        }
+        
+        const mergedPdfBytes = await mergedPdf.save();
+        fs.writeFileSync(outputPath, mergedPdfBytes);
+        console.log(`✅ Combined PDF saved: ${path.basename(outputPath)}`);
+        
+    } catch (error) {
+        console.error('Error combining PDFs:', error);
+        throw error;
+    }
+}
+
+async function generateFinalPdf(outputDir, pdfSlug) {
+    try {
+        const htmlDir = path.join(outputDir, pdfSlug, 'html');
+        const pdfDir = path.join(outputDir, pdfSlug, 'pdf');
+        
+        if (!fs.existsSync(pdfDir)) {
+            fs.mkdirSync(pdfDir, { recursive: true });
+        }
+        
+        const htmlFiles = fs.readdirSync(htmlDir)
+            .filter(file => file.endsWith('.html'))
+            .sort((a, b) => {
+                const numA = parseInt(a.match(/page_(\d+)/)?.[1] || '0');
+                const numB = parseInt(b.match(/page_(\d+)/)?.[1] || '0');
+                return numA - numB;
+            });
+        
+        console.log(`📄 Converting ${htmlFiles.length} HTML files to PDF in parallel...`);
+        
+        // Use a shared browser instance for all conversions
+        const browser = await puppeteer.launch();
+        
+        try {
+            // Convert HTML files to PDFs in parallel using shared browser
+            const pdfConversions = htmlFiles.map(async (htmlFile) => {
+                const htmlPath = path.join(htmlDir, htmlFile);
+                const pdfFileName = htmlFile.replace('.html', '.pdf');
+                const pdfPath = path.join(pdfDir, pdfFileName);
+                
+                await convertHtmlToPdf(htmlPath, pdfPath, browser);
+                return pdfPath;
+            });
+            
+            const pdfPaths = await Promise.all(pdfConversions);
+            
+            const finalPdfPath = path.join(outputDir, pdfSlug, `${pdfSlug}-combined.pdf`);
+            await combineMultiplePdfs(pdfPaths, finalPdfPath);
+            
+            console.log(`🎉 Final combined PDF generated: ${finalPdfPath}`);
+            return finalPdfPath;
+            
+        } finally {
+            await browser.close();
+        }
+        
+    } catch (error) {
+        console.error('Error generating final PDF:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     takePdfScreenshots,
     sendScreenshotsToLLM,
     processPdfFile,
     readCsvData,
-    parseHtmlFromLLMResponse
+    parseHtmlFromLLMResponse,
+    convertHtmlToPdf,
+    combineMultiplePdfs,
+    generateFinalPdf
 }; 

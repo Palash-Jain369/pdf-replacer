@@ -11,7 +11,9 @@
     "axios": "^1.6.0",
     "dotenv": "^17.2.1",
     "form-data": "^4.0.0",
-    "pdf2pic": "^2.1.4"
+    "pdf-lib": "^1.17.1",
+    "pdf2pic": "^2.1.4",
+    "puppeteer": "^24.16.2"
   },
   "keywords": [
     "pdf",
