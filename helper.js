@@ -11,12 +11,12 @@ async function takePdfScreenshots(pdfPath, outputDir = './screenshots', options 
         }
 
         const defaultOptions = {
-            density: 100,
+            density: 150,
             saveFilename: "page",
             savePath: outputDir,
             format: "png",
-            width: 800,
-            height: 600
+            width: 1200,
+            height: 900
         };
 
         const config = { ...defaultOptions, ...options };
@@ -46,12 +46,19 @@ async function sendScreenshotsToLLM(screenshotPaths, apiKey = null) {
             const imageBuffer = fs.readFileSync(screenshotPath);
             const base64Image = imageBuffer.toString('base64');
             
-            const prompt = `Create an HTML container section of 16:9 ratio that looks exactly like the image attached here. It should be a single HTML file using cdn.tailwindcss.com and google font cdn. Replace all moustache variables with dummy data. Output should be strictly json: "output":"your response"
+            const prompt = `Create an HTML container section of 16:9 ratio that looks exactly like the image attached here. 
+
+IMPORTANT: Replace all moustache/template variables (like {{name}}, {{date}}, {{amount}}, etc.) with realistic dummy data that fits the context.
+
+Match the exact colors, fonts, spacing, and layout. Use cdn.tailwindcss.com and google font cdn. 
+
+Output should be strictly json: {"output":"your complete HTML response"}
 
 `;
             const payload = {
                 model: "claude-sonnet-4-20250514",
-                max_tokens: 4096,
+                max_tokens: 8192,
+                temperature: 0.1,
                 messages: [
                     {
                         role: "user",
